@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo1.mapper.UserMapper">
+
+    <resultMap id="UserResult" type="com.example.demo1.domain.User">
+        <id     property="userId" column="user_id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="nickname" column="nickname" />
+    </resultMap>
+
+    <resultMap id="UserVoResult" type="com.example.demo1.domain.vo.UserVo">
+        <id     property="userId" column="user_id" />
+        <result property="username" column="username" />
+        <result property="password" column="password" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="nickname" column="nickname" />
+    </resultMap>
+
+    <sql id="selectUserVo">
+        select
+            user_id,
+            username,
+            password,
+            phone,
+            email,
+            nickname
+        from `user`
+    </sql>
+
+    <!--trim 标签中的 suffixOverrides 可以移除结尾多余的逗号 -->
+    <insert id="insert" parameterType="com.example.demo1.domain.bo.UserBo" useGeneratedKeys="true" keyProperty="userId">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                user_id,
+            </if>
+            <if test="username != null and userId != ''">
+                username,
+            </if>
+            <if test="password != null and password != ''">
+                password,
+            </if>
+            <if test="phone != null and phone != ''">
+                phone,
+            </if>
+            <if test="email != null and email != ''">
+                email,
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                #{userId},
+            </if>
+            <if test="username != null and userId != ''">
+                #{username},
+            </if>
+            <if test="password != null and password != ''">
+                #{password},
+            </if>
+            <if test="phone != null and phone != ''">
+                #{phone},
+            </if>
+            <if test="email != null and email != ''">
+                #{email},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                #{nickname},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectList" resultMap="UserVoResult">
+        <include refid="selectUserVo" />
+    </select>
+
+    <select id="selectById" resultMap="UserVoResult">
+        <include refid="selectUserVo" />
+        <where>
+            user_id = #{id}
+        </where>
+    </select>
+
+    <select id="checkSameUserName" resultType="java.lang.Integer">
+        select count(user_id)
+        from `user`
+        where username = #{username}
+    </select>
+</mapper>
